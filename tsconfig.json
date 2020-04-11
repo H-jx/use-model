@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "strict": true,
+    "lib": ["es5", "dom"],
+    "module": "es2015",
+    "rootDir": "src",
+    "outDir": "es",
+    "inlineSourceMap": false,
+    "noImplicitAny": true,
+  },
+  "include": ["src/**/*.ts", "__test__/test.spec.ts"]
+}

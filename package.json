@@ -1,0 +1,38 @@
+{
+  "name": "use-easy-model",
+  "version": "1.0.1",
+  "description": "A simpler way to useReducers",
+  "main": "dist/index.js",
+  "module": "es/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/H-jx/use-model.git"
+  },
+  "dependencies": {
+    "@types/jest": "^24.0.13",
+    "react": "^16.13.1"
+  },
+  "devDependencies": {
+    "jest": "^24.8.0",
+    "rollup": "^1.12.2",
+    "rollup-plugin-babel": "^4.3.2",
+    "rollup-plugin-node-resolve": "^5.0.0",
+    "rollup-plugin-typescript2": "^0.21.1",
+    "rollup-plugin-uglify": "^6.0.2",
+    "ts-jest": "^23.10.5",
+    "tslint": "^5.14.0",
+    "typescript": "^3.4.5"
+  },
+  "scripts": {
+    "build:es": "tsc",
+    "build:min": "rollup -c --environment INCLUDE_DEPS,BUILD:production",
+    "test": "jest"
+  },
+  "files": [
+    "dist",
+    "lib",
+    "es"
+  ],
+  "author": "",
+  "license": "ISC"
+}
