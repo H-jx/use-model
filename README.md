@@ -6,7 +6,7 @@ npm install use-easy-model
 ## Usage
 
 ```javascript
-import useModel, { StateAndAction, Model } from 'ROOT/libs/use-easy-model';
+import useModel, { StateAndAction, Model } from 'use-easy-model';
 
 const initialState: State = {count: 1};
 
