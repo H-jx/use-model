@@ -8,6 +8,10 @@ npm install use-easy-model
 ```javascript
 import useModel, { StateAndAction, Model } from 'use-easy-model';
 
+interface State {
+    count: number;
+}
+
 const initialState: State = {count: 1};
 
 const reducers = {
