@@ -15,11 +15,15 @@ interface State {
 const initialState: State = {count: 1};
 
 const reducers = {
-  increment: (state: State, payload: number) => Object.assign({}, state, state.count + payload})
-  decrement: (state: State, payload: number) => Object.assign({}, state, state.count - payload})
+  increment: (state: State, payload: number = 1) => {
+      return {count: state.count + payload};
+  },
+  decrement: (state: State, payload: number = -1) => {
+      return {count: state.count + payload};
+  })
 };
 
-const effects = ({state, actions}: StateAndAction<State, typeof reducers>) => ({
+const effects = ({state, actions}) => ({
     callEffect () {
         setTimeout(() => {
             this.delay('');
@@ -33,7 +37,12 @@ const effects = ({state, actions}: StateAndAction<State, typeof reducers>) => ({
 });
 
 const model: Model<State, typeof reducers, typeof effects> = {state: initialState, reducers, effects}
-const [state, reducerActions, effectsActions] = useModel(model);
+
+const [state, reducerActions, effectsActions] = useModel({
+    state: initialState,
+    reducers
+    effects
+});
 
 // will call reducers.increment
 reducerActions.increment(1);

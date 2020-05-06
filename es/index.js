@@ -1,5 +1,6 @@
 import { useReducer, useMemo } from 'react';
-export default function useReduction(_a) {
+
+function useModel(_a) {
     var initialState = _a.state, reducerMap = _a.reducers, effectInitializer = _a.effects, initializer = _a.initializer, _b = _a.debug, debug = _b === void 0 ? false : _b;
     var _c = useReducer(makeReducer(reducerMap), initialState, initializer), state = _c[0], dispatch = _c[1];
     var actions = useMemo(function () { return makeActions(dispatch, reducerMap, debug); }, [
@@ -10,7 +11,7 @@ export default function useReduction(_a) {
         : undefined;
     return [state, actions, effectsAction];
 }
-export function makeReducer(reducerMap) {
+function makeReducer(reducerMap) {
     return function (state, action) {
         // if the dispatched action is valid and there's a matching reducer, use it
         if (action && action.type && reducerMap[action.type]) {
@@ -22,7 +23,7 @@ export function makeReducer(reducerMap) {
         }
     };
 }
-export function makeActions(dispatch, reducerMap, debug) {
+function makeActions(dispatch, reducerMap, debug) {
     var types = Object.keys(reducerMap);
     return types.reduce(function (actions, type) {
         // if there isn't already an action with this type
@@ -41,3 +42,6 @@ export function makeActions(dispatch, reducerMap, debug) {
         return actions;
     }, {});
 }
+
+export default useModel;
+export { makeActions, makeReducer };

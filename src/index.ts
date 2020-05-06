@@ -29,13 +29,6 @@ export type ActionMap<R extends MethodMapBase> = {
 };
 
 /**
- * async action, auto create by EffectMap
- */
-export type EffectActionMap<EffectMethods extends MethodMapBase = MethodMapBase> = {
-    [K in keyof EffectMethods]: (...arg: Parameters<EffectMethods[K]>) => ReturnType<EffectMethods[K]>;
-};
-
-/**
  * function map, map's key as action type, value as reduce
  */
 export type ReducerMap<S = any, R extends MethodMapBase = MethodMapBase> = {
@@ -43,25 +36,20 @@ export type ReducerMap<S = any, R extends MethodMapBase = MethodMapBase> = {
 };
 
 /**
- * async action, you can call action in effect with async function
- */
-export type EffectMap<EffectMethods extends MethodMapBase = MethodMapBase> = EffectActionMap<EffectMethods>;
-
-/**
  * return EffectMap
  */
 export type EffectInitializer<S, R extends MethodMapBase, E extends EffectMethodBase> =
-    ({ state, actions }: StateAndAction<S, R>) => EffectMap<ReturnType<E>>;
+    ({ state, actions }: StateAndAction<S, R>) => ReturnType<E>;
 
 export interface Model<S, R extends MethodMapBase, E extends EffectMethodBase> {
-    state: S;
+    state: S | any;
     reducers: ReducerMap<S, R>;
     effects?: EffectInitializer<S, R, E>;
     initializer?: any;
     debug?: boolean;
 }
 
-export default function useEasyModel<S, R extends MethodMapBase, E extends EffectMethodBase = any>({
+export default function useModel<S, R extends MethodMapBase, E extends EffectMethodBase = any>({
     state: initialState,
     reducers: reducerMap,
     effects: effectInitializer,
@@ -70,7 +58,7 @@ export default function useEasyModel<S, R extends MethodMapBase, E extends Effec
 }: Model<S, R, E>): [
     S,
     ActionMap<R>,
-    E extends EffectMethodBase ? EffectActionMap<ReturnType<E>> : undefined
+    E extends EffectMethodBase ? ReturnType<E> : undefined
 ] {
     const [state, dispatch] = useReducer(
         makeReducer<Model<S, R, E>['state'], Model<S, R, E>['reducers']>(reducerMap),

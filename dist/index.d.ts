@@ -47,13 +47,13 @@ export declare type EffectMap<EffectMethods extends MethodMapBase = MethodMapBas
  */
 export declare type EffectInitializer<S, R extends MethodMapBase, E extends EffectMethodBase> = ({ state, actions }: StateAndAction<S, R>) => EffectMap<ReturnType<E>>;
 export interface Model<S, R extends MethodMapBase, E extends EffectMethodBase> {
-    state: S;
+    state: S | any;
     reducers: ReducerMap<S, R>;
     effects?: EffectInitializer<S, R, E>;
     initializer?: any;
     debug?: boolean;
 }
-export default function useReduction<S, R extends MethodMapBase, E extends EffectMethodBase = any>({ state: initialState, reducers: reducerMap, effects: effectInitializer, initializer, debug, }: Model<S, R, E>): [S, ActionMap<R>, E extends EffectMethodBase ? EffectActionMap<ReturnType<E>> : undefined];
+export default function useModel<S, R extends MethodMapBase, E extends EffectMethodBase = any>({ state: initialState, reducers: reducerMap, effects: effectInitializer, initializer, debug, }: Model<S, R, E>): [S, ActionMap<R>, E extends EffectMethodBase ? EffectActionMap<ReturnType<E>> : undefined];
 export declare function makeReducer<S, R extends MethodMapBase>(reducerMap: ReducerMap<S, R>): (state: S, action: { [T in keyof R]: {
     type: T;
     payload: Parameters<R[T]>[1];

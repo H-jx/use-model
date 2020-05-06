@@ -1,6 +1,6 @@
 {
   "name": "use-easy-model",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "A simpler way to useReducers",
   "main": "dist/index.js",
   "module": "es/index.js",
@@ -9,24 +9,31 @@
     "url": "https://github.com/H-jx/use-model.git"
   },
   "dependencies": {
-    "@types/jest": "^24.0.13",
-    "react": "^16.13.1"
+    "immer": "^6.0.5"
   },
   "devDependencies": {
+    "@testing-library/react-hooks": "^3.2.1",
+    "@types/jest": "^24.9.1",
+    "@types/mocha": "^7.0.2",
+    "@types/react": "^16.9.34",
+    "cross-env": "^7.0.2",
     "jest": "^24.8.0",
+    "react": "^16.13.1",
+    "react-test-renderer": "^16.9.0",
     "rollup": "^1.12.2",
     "rollup-plugin-babel": "^4.3.2",
     "rollup-plugin-node-resolve": "^5.0.0",
     "rollup-plugin-typescript2": "^0.21.1",
     "rollup-plugin-uglify": "^6.0.2",
-    "ts-jest": "^23.10.5",
+    "ts-jest": "^25.4.0",
     "tslint": "^5.14.0",
     "typescript": "^3.4.5"
   },
   "scripts": {
-    "build:es": "tsc",
-    "build:min": "rollup -c --environment INCLUDE_DEPS,BUILD:production",
-    "test": "jest"
+    "build:es": "cross-env NODE_ENV=production:es rollup -c",
+    "build:min": "cross-env NODE_ENV=production:min rollup -c",
+    "build": "npm run test && npm run build:es && npm run build:min",
+    "test": "jest --colors --onlyChanged"
   },
   "files": [
     "dist",
