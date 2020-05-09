@@ -8,17 +8,30 @@ interface State {
 const initialState = { count: 0 };
 
 const reducers = {
-    increment: (state: State, payload: number) => {
+    increment: (state: State, payload?: number) => {
         return {count: state.count + 1};
     },
-    decrement: (state: State, payload: number) => {
+    decrement: (state: State, payload?: number) => {
         return {count: state.count - 1};
     },
 };
+const effects = ({state, actions}: {state: State, actions: ActionMap<typeof reducers>}) => ({
+    callEffect () {
+        setTimeout(() => {
+            this.delay('');
+        }, 1000);
+    },
+    async delay (payload: string) {
+        setTimeout(() => {
+             actions.increment(3);
+        }, 1000);
+    },
+});
 export function useCounter() {
-    const [state, actions] = useModel<State, typeof reducers>({
+    const [state, actions, effectsActions] = useModel({
         state: initialState,
         reducers,
+        effects,
     });
     
     return {

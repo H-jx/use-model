@@ -8,15 +8,15 @@
     "type": "git",
     "url": "https://github.com/H-jx/use-model.git"
   },
-  "dependencies": {
-    "immer": "^6.0.5"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@testing-library/react-hooks": "^3.2.1",
     "@types/jest": "^24.9.1",
     "@types/mocha": "^7.0.2",
     "@types/react": "^16.9.34",
     "cross-env": "^7.0.2",
+    "immer": "^6.0.5",
+    "immutable": "^4.0.0-rc.12",
     "jest": "^24.8.0",
     "react": "^16.13.1",
     "react-test-renderer": "^16.9.0",

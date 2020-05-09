@@ -1,29 +1,19 @@
 import { useReducer, Dispatch, useMemo } from 'react';
 
-/**
- * base methods used in reducers or effect
- */
 export interface MethodMapBase {
     [actionType: string]: (
         ...args: any[]
     ) => any;
 }
 
-export type EffectMethodBase = ({ state, actions }: { state: any, actions: any }) => MethodMapBase;
-
 export interface StateAndAction<S, R extends MethodMapBase = any> {
     state: S;
     actions: ActionMap<R>;
 }
-// action type get from  ReducerMap
 export type ActionUnion<R extends MethodMapBase> = {
     [T in keyof R]: { type: T; payload: Parameters<R[T]>[1] };
 }[keyof R];
 
-/**
- * action fuction, auto create by ReducerMap
- * call action = dispath({type: 'TYPE', payload: any});
- */
 export type ActionMap<R extends MethodMapBase> = {
     [K in keyof R]: (payload?: ActionUnion<R>['payload']) => void;
 };
@@ -32,40 +22,43 @@ export type ActionMap<R extends MethodMapBase> = {
  * function map, map's key as action type, value as reduce
  */
 export type ReducerMap<S = any, R extends MethodMapBase = MethodMapBase> = {
-    [K in keyof R]: (prevState: S, payload?: any) => S;
+    [K in keyof R]: (prevState: S, payload?: any) => any;
 };
+
+export type EffectMethodBase = ({ state, actions }: { state: any, actions: any }) => MethodMapBase;
 
 /**
  * return EffectMap
  */
-export type EffectInitializer<S, R extends MethodMapBase, E extends EffectMethodBase> =
-    ({ state, actions }: StateAndAction<S, R>) => ReturnType<E>;
+export type EffectInitializer<S, A, E extends EffectMethodBase> =
+    ({ state, actions }: {state: S, actions: A}) => ReturnType<E>;
 
-export interface Model<S, R extends MethodMapBase, E extends EffectMethodBase> {
+export interface Model<S, R extends MethodMapBase, E extends EffectMethodBase = EffectMethodBase> {
     state: S | any;
     reducers: ReducerMap<S, R>;
-    effects?: EffectInitializer<S, R, E>;
+    effects?: E;
     initializer?: any;
     debug?: boolean;
 }
 
-export default function useModel<S, R extends MethodMapBase, E extends EffectMethodBase = any>({
+
+export default function useModel<M extends Model<any, MethodMapBase>>({
     state: initialState,
     reducers: reducerMap,
     effects: effectInitializer,
     initializer,
     debug = false,
-}: Model<S, R, E>): [
-    S,
-    ActionMap<R>,
-    E extends EffectMethodBase ? ReturnType<E> : undefined
+}: M): [
+    M['state'],
+    ActionMap<M['reducers']>,
+    M['effects'] extends EffectMethodBase ? ReturnType<M['effects']> : undefined
 ] {
     const [state, dispatch] = useReducer(
-        makeReducer<Model<S, R, E>['state'], Model<S, R, E>['reducers']>(reducerMap),
+        makeReducer<M['state'], M['reducers']>(reducerMap),
         initialState,
         initializer,
     );
-    const actions = useMemo(() => makeActions<S, R>(dispatch, reducerMap, debug), [
+    const actions = useMemo(() => makeActions<M['state'], M['reducers']>(dispatch, reducerMap, debug), [
         reducerMap,
     ]);
     let effectsAction: any = effectInitializer
@@ -75,15 +68,20 @@ export default function useModel<S, R extends MethodMapBase, E extends EffectMet
     return [state, actions, effectsAction];
 }
 
+let reducerHanlder = function ({preState, payload, redurcer}: {
+    preState: any,
+    payload: any,
+    redurcer: (preState: any, payload: any) => any;
+}) {
+    return redurcer(preState, payload);
+}
 export function makeReducer<S, R extends MethodMapBase>(
     reducerMap: ReducerMap<S, R>,
 ) {
     return (state: S, action: ActionUnion<R>) => {
-        // if the dispatched action is valid and there's a matching reducer, use it
         if (action && action.type && reducerMap[action.type]) {
-            return reducerMap[action.type](state, action.payload);
+            return reducerHanlder({preState: state, payload: action.payload, redurcer: reducerMap[action.type]});
         } else {
-            // always return state if the action has no reducer
             return state;
         }
     };
@@ -96,13 +94,10 @@ export function makeActions<S, R extends MethodMapBase>(
 ): ActionMap<R> {
     const types = Object.keys(reducerMap) as (keyof R)[];
     return types.reduce((actions: ActionMap<R>, type: keyof R) => {
-        // if there isn't already an action with this type
         if (!actions[type]) {
-            // dispatches action with type and payload when called
             actions[type] = (payload: any) => {
                 const action = { type, payload };
                 dispatch(action);
-                // optionally log actions
                 if (debug) {
                     // tslint:disable-next-line
                     console.log(action);
@@ -113,3 +108,10 @@ export function makeActions<S, R extends MethodMapBase>(
     }, {} as ActionMap<R>);
 }
 
+export function setReducerHanlder(handle: ({preState, payload, redurcer}: {
+    preState: any,
+    payload: any,
+    redurcer: (state: any, payload: any) => any;
+}) => any) {
+    reducerHanlder = handle;
+}
