@@ -11,14 +11,16 @@ function useModel(_a) {
         : undefined;
     return [state, actions, effectsAction];
 }
+var reducerHanlder = function (_a) {
+    var preState = _a.preState, payload = _a.payload, redurcer = _a.redurcer;
+    return redurcer(preState, payload);
+};
 function makeReducer(reducerMap) {
     return function (state, action) {
-        // if the dispatched action is valid and there's a matching reducer, use it
         if (action && action.type && reducerMap[action.type]) {
-            return reducerMap[action.type](state, action.payload);
+            return reducerHanlder({ preState: state, payload: action.payload, redurcer: reducerMap[action.type] });
         }
         else {
-            // always return state if the action has no reducer
             return state;
         }
     };
@@ -26,13 +28,10 @@ function makeReducer(reducerMap) {
 function makeActions(dispatch, reducerMap, debug) {
     var types = Object.keys(reducerMap);
     return types.reduce(function (actions, type) {
-        // if there isn't already an action with this type
         if (!actions[type]) {
-            // dispatches action with type and payload when called
             actions[type] = function (payload) {
                 var action = { type: type, payload: payload };
                 dispatch(action);
-                // optionally log actions
                 if (debug) {
                     // tslint:disable-next-line
                     console.log(action);
@@ -42,6 +41,9 @@ function makeActions(dispatch, reducerMap, debug) {
         return actions;
     }, {});
 }
+function setReducerHanlder(handle) {
+    reducerHanlder = handle;
+}
 
 export default useModel;
-export { makeActions, makeReducer };
+export { makeActions, makeReducer, setReducerHanlder };

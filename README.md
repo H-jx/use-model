@@ -3,7 +3,7 @@
 npm install use-easy-model
 ```
 
-
+## Usage
 
 ```js
 import * as React from 'react';
